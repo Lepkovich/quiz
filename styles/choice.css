@@ -26,8 +26,10 @@
     padding: 27px 70px 26px 70px;
     position: relative;
     transition: .2s ease all;
-    width: 588px;
+    width: 600px;
+    box-sizing: border-box;
 }
+
 .choice-option-arrow {
     position: absolute;
     right: 40px;

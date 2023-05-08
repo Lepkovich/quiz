@@ -1,0 +1,68 @@
+(function (){
+    const Form = {
+        agreeElement: null,
+        processElement: null,
+        fields: [
+            {
+                name: 'name',
+                id: 'name',
+                element: null,
+                regex: /^[А-Я][а-я]+\s*$/, //регулярка Первая заглавная + любое кол-во букв
+                valid: false,
+            },
+            {
+                name: 'lastName',
+                id: 'last-name',
+                element: null,
+                regex: /^[А-Я][а-я]+\s*$/, //регулярка Первая заглавная + любое кол-во букв
+                valid: false,
+            },
+            {
+                name: 'email',
+                id: 'email',
+                element: null,
+                regex: /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/, //регулярка Первая заглавная + любое кол-во букв, //регулярка Первая заглавная + любое кол-во букв
+                valid: false,
+            },
+        ],
+        init() {
+            const that = this;
+            this.fields.forEach(item => {
+                item.element = document.getElementById(item.id);
+                item.element.onchange = function () {
+                    that.validateField.call(that, item, this)
+                }
+            });
+            this.processElement = document.getElementById('process');
+            this.processElement.onchange = function () {
+
+            }
+            this.agreeElement = document.getElementById('agree');
+            this.agreeElement.onchange = function () {
+                that.validateForm();
+            }
+
+        },
+        validateField(field, element) {
+            if(!element.value || !element.value.match(field.regex)){
+                element.parentNode.style.borderColor = 'red'; //красим рамку родителю
+                field.valid = false;
+            } else {
+                element.parentNode.removeAttribute('style'); // удалим покраску родительской рамки
+                field.valid = true;
+            }
+            this.validateForm();
+        },
+        validateForm() {
+            const validForm = this.fields.every(item => item.valid);
+            if (this.agreeElement.checked && validForm) {
+                this.processElement.removeAttribute('disabled')
+            } else {
+                this.processElement.setAttribute('disabled', 'disabled')
+
+            }
+        }
+    };
+    //видео 29:30
+    Form.init();
+})();
