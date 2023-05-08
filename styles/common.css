@@ -24,6 +24,17 @@ a {
     max-width: 1200px;
     margin: 0 auto ;
 }
+
+.big-title {
+    font-family: "Museo Sans Cyrl Bold", sans-serif;
+    font-size: 54px;
+    line-height: 65px;
+}
+
+.big-title span {
+    color: #6933DC;
+}
+
 .common-title {
     font-family: "Museo Sans Cyrl Bold", sans-serif;
     font-size: 48px;
@@ -47,6 +58,15 @@ a {
 }
 .button:hover {
     background: #2a0c69;
+}
+.button-transparent {
+    background: transparent;
+    color: #6933DC;
+    border: 1px solid #6933DC;
+}
+.button-transparent:hover {
+    background: #6933DC;
+    color: #FFFFFF;
 }
 .footer {
     text-align: center;
