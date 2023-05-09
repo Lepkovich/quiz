@@ -72,6 +72,12 @@ a.button {
     color: #6933DC;
     border: 1px solid #6933DC;
 }
+.button-transparent:disabled {
+    background: transparent;
+    color: #e2dfe7;
+    border: 1px solid #e2dfe7;
+}
+
 .button-transparent:hover {
     background: #6933DC;
     color: #FFFFFF;
