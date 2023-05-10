@@ -1,6 +1,7 @@
 (function () {
     const Test = {
         quiz: null,
+        progressBarElement: null,
         questionTitleElement: null,
         nextButtonElement: null,
         passButtonElement: null,
@@ -32,6 +33,7 @@
         },
         startQuiz() {
             console.log(this.quiz);
+            this.progressBarElement = document.getElementById('progress-bar');
             this.questionTitleElement = document.getElementById('title');
             this.optionsElement = document.getElementById('options');
 
@@ -44,8 +46,43 @@
             this.prevButtonElement = document.getElementById('prev');
             this.prevButtonElement.onclick = this.move.bind(this, 'prev');
 
+            document.getElementById('pre-title').innerText = this.quiz.name;
+
+            this.prepareProgressBar();
             this.showQuestion();
+
+            const timerElement = document.getElementById('timer');
+            let seconds = 59;
+            const interval = setInterval(function (){
+                seconds--;
+                timerElement.innerText = seconds;
+                if (seconds === 0) {
+                    clearInterval(interval);
+                    this.complete();
+                }
+            }.bind(this),1000);
         },
+        prepareProgressBar() {
+            // создаем структуру html документа "test-progress-bar"
+            for (let i = 0; i < this.quiz.questions.length; i++) {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'test-progress-bar-item' + (i === 0 ? ' active' : '');
+
+                const itemCircleElement = document.createElement('div');
+                itemCircleElement.className = 'test-progress-bar-item-circle';
+
+                const itemTextElement = document.createElement('div');
+                itemTextElement.className = 'test-progress-bar-item-text';
+                itemTextElement.innerText = 'Вопрос ' + (i + 1);
+
+                itemElement.appendChild(itemCircleElement);
+                itemElement.appendChild(itemTextElement);
+                this.progressBarElement.appendChild(itemElement);
+
+            }
+
+        },
+
         showQuestion() {
             const activeQuestion = this.quiz.questions[this.currentQuestionIndex -1];
             this.questionTitleElement.innerHTML = '<span>Вопрос ' + this.currentQuestionIndex
@@ -141,7 +178,55 @@
             } else {
                 this.currentQuestionIndex--;
             }
+
+            if (this.currentQuestionIndex > this.quiz.questions.length) {
+                this.complete();
+                return;
+            }
+
+            Array.from(this.progressBarElement.children).forEach((item, index) => {
+                const currentItemIndex = index + 1;
+                item.classList.remove('complete');
+                item.classList.remove('active');
+                if (currentItemIndex === this.currentQuestionIndex) {
+                    item.classList.add('active');
+                } else if (currentItemIndex < this.currentQuestionIndex) {
+                    item.classList.add('complete');
+                }
+            })
+
             this.showQuestion();
+        },
+        complete() {
+            const url = new URL(location.href);
+            const id = url.searchParams.get('id');
+            const name = url.searchParams.get('name');
+            const lastName = url.searchParams.get('lastName');
+            const email = url.searchParams.get('email');
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'https://testologia.site/pass-quiz?id=' + id, false);
+            xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+            xhr.send(JSON.stringify({
+                name: name,
+                lastName: lastName,
+                email: email,
+                results: this.userResult
+            }));
+
+            if (xhr.status === 200 && xhr.responseText) {
+                let result = null;
+                try {
+                    result = JSON.parse(xhr.responseText);
+                } catch (e){
+                    location.href = 'index.html';
+                }
+                if (result) {
+                    console.log(result);
+                    location.href = 'result.html?score=' + result.score + '&total=' + result.total;
+                }
+            } else {
+                location.href = 'index.html';
+            }
         }
     }
     Test.init();
