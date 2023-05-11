@@ -1,5 +1,5 @@
 .result {
-    padding-top: 140px;
+    padding-top: 100px;
     padding-bottom: 91px;
     text-align: center;
 }
@@ -12,7 +12,7 @@
 }
 .result-image {
     position: absolute;
-    top: 225px;
+    top: 85px;
     z-index: -1;
 }
 .result-title {
@@ -32,4 +32,23 @@
     line-height: 190px;
     color: #FFFFFF;
     font-family: "Museo Sans Cyrl Bold", sans-serif;
+}
+.show-answers.container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 80px;
+    flex-direction: row;
+}
+.show-answers a {
+    font-size: 17px;
+    line-height: 20px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+.show-answers a:hover {
+    text-decoration: underline  ;
+}
+.show-answers a img {
+    margin-left: 13px;
 }
