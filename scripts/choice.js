@@ -52,7 +52,6 @@
         },
         chooseQuiz(element) {
             const dataID = element.getAttribute('data-id')
-            console.log(dataID);
             if (dataID) {
                 location.href = 'test.html' + location.search + '&id=' + dataID;
             }
@@ -60,5 +59,3 @@
     }
     Choice.init();
 })();
-
-//закончил на 1:00

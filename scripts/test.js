@@ -32,7 +32,6 @@
             }
         },
         startQuiz() {
-            console.log(this.quiz);
             this.progressBarElement = document.getElementById('progress-bar');
             this.questionTitleElement = document.getElementById('title');
             this.optionsElement = document.getElementById('options');
@@ -52,7 +51,7 @@
             this.showQuestion();
 
             const timerElement = document.getElementById('timer');
-            let seconds = 59;
+            let seconds = 60;
             const interval = setInterval(function (){
                 seconds--;
                 timerElement.innerText = seconds;
@@ -171,7 +170,6 @@
                 });
             }
 
-            console.log(this.userResult);
 
             if (action === 'next' || action === 'pass') {
                 this.currentQuestionIndex++;
@@ -198,6 +196,8 @@
             this.showQuestion();
         },
         complete() {
+            const userAnswers = this.userResult.map(item => item.chosenAnswerId);
+            const userAnswersString = userAnswers.join(',');
             const url = new URL(location.href);
             const id = url.searchParams.get('id');
             const name = url.searchParams.get('name');
@@ -221,8 +221,8 @@
                     location.href = 'index.html';
                 }
                 if (result) {
-                    console.log(result);
-                    location.href = 'result.html?score=' + result.score + '&total=' + result.total;
+
+                    location.href = 'result.html?score=' + result.score + '&total=' + result.total + '&id=' + id + '&answers=' + userAnswersString;
                 }
             } else {
                 location.href = 'index.html';

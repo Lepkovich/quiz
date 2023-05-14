@@ -7,3 +7,13 @@ function checkUserData() {
         location.href = 'index.html';
     }
 }
+
+
+function checkAnswersData() {
+    const url = new URL(location.href);
+    const testId = url.searchParams.get('id');
+    const userAnswersString = url.searchParams.get('answers');
+    if (!testId || !userAnswersString) {
+        location.href = 'index.html';
+    }
+}
