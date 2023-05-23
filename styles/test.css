@@ -49,7 +49,7 @@
     margin-right: 15px;
 }
 .test-time-clock {
-    background-image: url("../images/clock.png");
+    background-image: url("../static/images/clock.png");
     background-size: cover;
     background-position: center;
     width: 27px;
