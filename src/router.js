@@ -21,10 +21,9 @@ export class Router {
                 }
             },
         ]
-
     }
 
-    openRoute() { // функция выберет какой роут загрузить исходя из текста в адресной строке
+    async openRoute() { // функция выберет какой роут загрузить исходя из текста в адресной строке
         const newRoute = this.routes.find(item => {
             return item.route === window.location.hash;
         })
@@ -34,6 +33,10 @@ export class Router {
             return; // обязательно нужно завершить эту функцию, чтобы дальше ничего за ней не происходило.
         }
 
-            document.getElementById('content').innerHTML = await fetch(newRoute.template)
+        document.getElementById('content').innerHTML =
+                       await fetch(newRoute.template).then(response => response.text());
+        document.getElementById('styles').setAttribute('href', newRoute.styles);
+        document.getElementById('title').innerText = newRoute.title;
+        newRoute.load();
     }
 }
