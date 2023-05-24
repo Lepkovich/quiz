@@ -12,11 +12,11 @@ export class Choice {
             try {
                 this.quizzes = JSON.parse(xhr.responseText)
             } catch (e) {
-                location.href = 'index.html';
+                location.href = '#/';
             }
             this.processQuizzes();
         } else {
-            location.href = 'index.html';
+            location.href = '#/';
         }
 
     }

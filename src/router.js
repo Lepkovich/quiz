@@ -1,4 +1,7 @@
 import {Form} from "./components/form.js";
+import {Choice} from "./components/choice.js";
+import {Test} from "./components/test.js";
+import {Result} from "./components/result.js";
 
 export class Router {
     constructor() {
@@ -12,12 +15,39 @@ export class Router {
                 }
             },
             {
-                route: 'form',
+                route: '#/form',
                 title: 'Регистрация',
                 template: 'templates/form.html',
                 styles: 'styles/form.css',
                 load: () => {
                     new Form();
+                }
+            },
+            {
+                route: '#/choice',
+                title: 'Выбор теста',
+                template: 'templates/choice.html',
+                styles: 'styles/choice.css',
+                load: () => {
+                    new Choice();
+                }
+            },
+            {
+                route: '#/test',
+                title: 'Прохождение теста',
+                template: 'templates/test.html',
+                styles: 'styles/test.css',
+                load: () => {
+                    new Test();
+                }
+            },
+            {
+                route: '#/result',
+                title: 'Результат',
+                template: 'templates/result.html',
+                styles: 'styles/result.css',
+                load: () => {
+                    new Result();
                 }
             },
         ]
@@ -27,8 +57,9 @@ export class Router {
         const newRoute = this.routes.find(item => {
             return item.route === window.location.hash;
         })
-
+        console.log(window.location.hash);
         if(!newRoute) { // если мы не найдем в адресной строке ничего из перечисленного в routes, загрузим главную страницу нашего SPA
+            console.log('мы в if')
             window.location.href = '#/';
             return; // обязательно нужно завершить эту функцию, чтобы дальше ничего за ней не происходило.
         }
