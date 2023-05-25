@@ -1,9 +1,11 @@
+import {UrlManager} from "../utils/url-manager.js";
+
 export class Choice {
 
     constructor() {
         this.quizzes =  [];
-
-        checkUserData();
+        this.routeParams = UrlManager.getQueryParams();
+        UrlManager.checkUserData(this.routeParams);
 
         const xhr = new XMLHttpRequest();
         xhr.open('GET', 'https://testologia.site/get-quizzes', false);
@@ -60,7 +62,8 @@ export class Choice {
     chooseQuiz(element) {
         const dataID = element.getAttribute('data-id')
         if (dataID) {
-            location.href = 'test.html' + location.search + '&id=' + dataID;
+            location.href = '#/test?name=' + this.routeParams.name + '&lastName=' + this.routeParams.lastName
+                + '&email' + this.routeParams.email +'&id=' + dataID;
         }
     }
 }

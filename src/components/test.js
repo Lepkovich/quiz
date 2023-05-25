@@ -21,14 +21,14 @@ export class Test {
                 try {
                     this.quiz = JSON.parse(xhr.responseText);
                 } catch (e) {
-                    location.href = 'index.html';
+                    location.href = '#/';
                 }
                 this.startQuiz();
             } else {
-                location.href = 'index.html';
+                location.href = '#/';
             }
         } else {
-            location.href = 'index.html';
+            location.href = '#/';
         }
 
     }
@@ -224,14 +224,14 @@ export class Test {
             try {
                 result = JSON.parse(xhr.responseText);
             } catch (e) {
-                location.href = 'index.html';
+                location.href = '#/';
             }
             if (result) {
 
                 location.href = 'result.html?score=' + result.score + '&total=' + result.total + '&id=' + id + '&answers=' + userAnswersString;
             }
         } else {
-            location.href = 'index.html';
+            location.href = '#/';
         }
     }
 }

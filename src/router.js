@@ -55,7 +55,7 @@ export class Router {
 
     async openRoute() { // функция выберет какой роут загрузить исходя из текста в адресной строке
         const newRoute = this.routes.find(item => {
-            return item.route === window.location.hash;
+            return item.route === window.location.hash.split('?')[0]; //split разделит адресную строку до ?, а [0] возьмет первую часть
         })
         console.log(window.location.hash);
         if(!newRoute) { // если мы не найдем в адресной строке ничего из перечисленного в routes, загрузим главную страницу нашего SPA

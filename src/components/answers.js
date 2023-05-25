@@ -14,10 +14,10 @@ export class Answers {
             try {
               this.rightAnswers = JSON.parse(xhr.responseText); // поставил тут this, без него ошибка
             } catch (e) {
-                location.href = 'index.html';
+                location.href = '#/';
             }
         } else {
-            location.href = 'index.html';
+            location.href = '#/';
         }
 
 //с backend запрашиваем наш quiz с вариантами ответов
@@ -27,11 +27,11 @@ export class Answers {
             try {
                 this.quiz = JSON.parse(xhr.responseText);
             } catch (e) {
-                location.href = 'index.html';
+                location.href = '#/';
             }
             this.showQuestions(userAnswers, rightAnswers);
         } else {
-            location.href = 'index.html';
+            location.href = '#/';
         }
     }
 
