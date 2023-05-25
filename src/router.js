@@ -2,6 +2,7 @@ import {Form} from "./components/form.js";
 import {Choice} from "./components/choice.js";
 import {Test} from "./components/test.js";
 import {Result} from "./components/result.js";
+import {Answers} from "./components/answers.js";
 
 export class Router {
     constructor() {
@@ -48,6 +49,15 @@ export class Router {
                 styles: 'styles/result.css',
                 load: () => {
                     new Result();
+                }
+            },
+            {
+                route: '#/answers',
+                title: 'Ответы на тест',
+                template: 'templates/answers.html',
+                styles: 'styles/answers.css',
+                load: () => {
+                    new Answers();
                 }
             },
         ]

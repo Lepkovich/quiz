@@ -22,7 +22,7 @@ export class UrlManager {
 
     static checkAnswersData(params) {
 
-        if (!params.testId || !params.userAnswersString) {
+        if (!params.score || !params.total || !params.id || !params.answers) {
             location.href = '#/';
         }
     }

@@ -1,3 +1,5 @@
+import {UrlManager} from "../utils/url-manager.js";
+
 export class Test {
     constructor() {
         this.quiz = null;
@@ -10,12 +12,13 @@ export class Test {
         this.currentQuestionIndex = 1;
         this.userResult = [];
 
-        checkUserData();
-        const url = new URL(location.href);
-        const testId = url.searchParams.get('id');
-        if (testId) {
+        this.routeParams = UrlManager.getQueryParams();
+        UrlManager.checkUserData(this.routeParams);
+
+        if (this.routeParams.id) {
+            console.log('мы заходим в бэкенд');
             const xhr = new XMLHttpRequest();
-            xhr.open('GET', 'https://testologia.site/get-quiz?id=' + testId, false);
+            xhr.open('GET', 'https://testologia.site/get-quiz?id=' + this.routeParams.id, false);
             xhr.send();
             if (xhr.status === 200 && xhr.responseText) {
                 try {
@@ -204,18 +207,14 @@ export class Test {
     complete() {
         const userAnswers = this.userResult.map(item => item.chosenAnswerId);
         const userAnswersString = userAnswers.join(',');
-        const url = new URL(location.href);
-        const id = url.searchParams.get('id');
-        const name = url.searchParams.get('name');
-        const lastName = url.searchParams.get('lastName');
-        const email = url.searchParams.get('email');
+
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'https://testologia.site/pass-quiz?id=' + id, false);
+        xhr.open('POST', 'https://testologia.site/pass-quiz?id=' + this.routeParams.id, false);
         xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
         xhr.send(JSON.stringify({
-            name: name,
-            lastName: lastName,
-            email: email,
+            name: this.routeParams.name,
+            lastName: this.routeParams.lastName,
+            email: this.routeParams.email,
             results: this.userResult
         }));
 
@@ -228,7 +227,7 @@ export class Test {
             }
             if (result) {
 
-                location.href = 'result.html?score=' + result.score + '&total=' + result.total + '&id=' + id + '&answers=' + userAnswersString;
+                location.href = '#/result?score=' + result.score + '&total=' + result.total + '&id=' + this.routeParams.id + '&answers=' + userAnswersString;
             }
         } else {
             location.href = '#/';

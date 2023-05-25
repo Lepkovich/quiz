@@ -1,18 +1,18 @@
+import {UrlManager} from "../utils/url-manager.js";
+
 export class Answers {
     constructor() {
-        checkAnswersData();
-        const url = new URL(location.href);
-        const testId = url.searchParams.get('id');
-        const userAnswersString = url.searchParams.get('answers');
-        const userAnswers = userAnswersString.split(',').map(Number);
+        this.routeParams = UrlManager.getQueryParams();
+        UrlManager.checkAnswersData(this.routeParams);
+        const userAnswers = this.routeParams.answers.split(',').map(Number);
 
 //с backend запрашиваем ответы на вопросы
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', 'https://testologia.site/get-quiz-right?id=' + testId, false);
+        xhr.open('GET', 'https://testologia.site/get-quiz-right?id=' + this.routeParams.id, false);
         xhr.send();
         if (xhr.status === 200 && xhr.responseText) {
             try {
-              this.rightAnswers = JSON.parse(xhr.responseText); // поставил тут this, без него ошибка
+              this.rightAnswers = JSON.parse(xhr.responseText); // нужно эту переменную сделать глобальной!
             } catch (e) {
                 location.href = '#/';
             }
@@ -21,7 +21,7 @@ export class Answers {
         }
 
 //с backend запрашиваем наш quiz с вариантами ответов
-        xhr.open('GET', 'https://testologia.site/get-quiz?id=' + testId, false);
+        xhr.open('GET', 'https://testologia.site/get-quiz?id=' + this.routeParams.id, false);
         xhr.send();
         if (xhr.status === 200 && xhr.responseText) {
             try {

@@ -44,7 +44,7 @@ export class Choice {
                 choiceOptionArrowElement.className = 'choice-option-arrow';
 
                 const choiceOptionImageElement = document.createElement('img');
-                choiceOptionImageElement.setAttribute('src', 'images/arrow.png');
+                choiceOptionImageElement.setAttribute('src', 'static/images/arrow.png');
                 choiceOptionImageElement.setAttribute('alt', 'стрелка');
 
                 choiceOptionArrowElement.appendChild(choiceOptionImageElement);
@@ -63,7 +63,7 @@ export class Choice {
         const dataID = element.getAttribute('data-id')
         if (dataID) {
             location.href = '#/test?name=' + this.routeParams.name + '&lastName=' + this.routeParams.lastName
-                + '&email' + this.routeParams.email +'&id=' + dataID;
+                + '&email=' + this.routeParams.email +'&id=' + dataID;
         }
     }
 }

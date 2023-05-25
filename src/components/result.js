@@ -1,15 +1,17 @@
+import {UrlManager} from "../utils/url-manager.js";
+
 export class Result {
 
     constructor() {
-        checkAnswersData();
-        const url = new URL(location.href);
-        const answers = url.searchParams.get('answers');
-        const testId = url.searchParams.get('id')
-        document.getElementById('result-score').innerText = url.searchParams.get('score') + '/'
-            + url.searchParams.get('total');
+        this.routeParams = UrlManager.getQueryParams();
+        UrlManager.checkAnswersData(this.routeParams);
+        document.getElementById('result-score').innerText = this.routeParams.score + '/'
+            + this.routeParams.total;
+        let id = this.routeParams.id;
+        let answers = this.routeParams.answers;
         let next = document.getElementById('show-answers');
         next.onclick = function () {
-            location.href = 'answers.html?id=' + testId + '&answers=' + answers;
+            location.href = '#/answers?id=' + id + '&answers=' + answers;
         }
     }
 }
