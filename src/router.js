@@ -67,9 +67,7 @@ export class Router {
         const newRoute = this.routes.find(item => {
             return item.route === window.location.hash.split('?')[0]; //split разделит адресную строку до ?, а [0] возьмет первую часть
         })
-        console.log(window.location.hash);
         if(!newRoute) { // если мы не найдем в адресной строке ничего из перечисленного в routes, загрузим главную страницу нашего SPA
-            console.log('мы в if')
             window.location.href = '#/';
             return; // обязательно нужно завершить эту функцию, чтобы дальше ничего за ней не происходило.
         }

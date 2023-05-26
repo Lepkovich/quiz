@@ -4,7 +4,7 @@ export class Result {
 
     constructor() {
         this.routeParams = UrlManager.getQueryParams();
-        UrlManager.checkAnswersData(this.routeParams);
+        UrlManager.checkResultData(this.routeParams);
         document.getElementById('result-score').innerText = this.routeParams.score + '/'
             + this.routeParams.total;
         let id = this.routeParams.id;

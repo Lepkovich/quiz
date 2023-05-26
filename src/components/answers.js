@@ -5,6 +5,7 @@ export class Answers {
         this.routeParams = UrlManager.getQueryParams();
         UrlManager.checkAnswersData(this.routeParams);
         const userAnswers = this.routeParams.answers.split(',').map(Number);
+        let rightAnswers;
 
 //с backend запрашиваем ответы на вопросы
         const xhr = new XMLHttpRequest();
@@ -12,7 +13,7 @@ export class Answers {
         xhr.send();
         if (xhr.status === 200 && xhr.responseText) {
             try {
-              this.rightAnswers = JSON.parse(xhr.responseText); // нужно эту переменную сделать глобальной!
+              rightAnswers = JSON.parse(xhr.responseText); //
             } catch (e) {
                 location.href = '#/';
             }
@@ -85,7 +86,7 @@ export class Answers {
                 } else if (item.id === userAnswers[i]) {
                     optionText.classList.add("wrong-answer-text");
                 }
-                optionText.innerText = item.answer + ' id:' + item.id;
+                optionText.innerText = item.answer;
                 option1.appendChild(optionText);
 
 // добавляем вариант ответа в div-элемент

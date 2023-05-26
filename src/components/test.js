@@ -16,7 +16,6 @@ export class Test {
         UrlManager.checkUserData(this.routeParams);
 
         if (this.routeParams.id) {
-            console.log('мы заходим в бэкенд');
             const xhr = new XMLHttpRequest();
             xhr.open('GET', 'https://testologia.site/get-quiz?id=' + this.routeParams.id, false);
             xhr.send();
@@ -38,7 +37,8 @@ export class Test {
 
     startQuiz() {
         this.progressBarElement = document.getElementById('progress-bar');
-        this.questionTitleElement = document.getElementById('title');
+
+        this.questionTitleElement = document.getElementById('question-title');
         this.optionsElement = document.getElementById('options');
 
         this.nextButtonElement = document.getElementById('next');
@@ -56,7 +56,7 @@ export class Test {
         this.showQuestion();
 
         const timerElement = document.getElementById('timer');
-        let seconds = 60;
+        let seconds = 6000;
         const interval = setInterval(function () {
             seconds--;
             timerElement.innerText = seconds;

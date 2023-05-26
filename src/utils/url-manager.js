@@ -20,9 +20,15 @@ export class UrlManager {
         }
     };
 
-    static checkAnswersData(params) {
+    static checkResultData(params) {
 
         if (!params.score || !params.total || !params.id || !params.answers) {
+            location.href = '#/';
+        }
+    }
+    static checkAnswersData(params) {
+
+        if (!params.id || !params.answers) {
             location.href = '#/';
         }
     }
