@@ -87,14 +87,44 @@ export class Form {
         return isValid;
     }
 
-    processForm() {
+    async processForm() {
         if (this.validateForm()) {
-            //нужно собрать строку вида 'choice.html?name=Alex&lastName=Platonov&email=mail@mail.ru'
-            let paramString = '';
-            this.fields.forEach(item => {
-                paramString += (!paramString ? '?' : '&') + item.name + '=' + item.element.value;
-            })
-            location.href = '#/choice' + paramString;
+
+            if (this.page === 'signup'){
+                //закидываем на бэкенд в body введенные поля пользователя:
+                try {
+                    const response = await fetch('http://localhost:3000/api/signup', {
+                        method: "POST",
+                        headers: {
+                            'Content-type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            name: this.fields.find(item => item.name === 'name').element.value,
+                            lastName: this.fields.find(item => item.name === 'lastName').element.value,
+                            email: this.fields.find(item => item.name === 'email').element.value,
+                            password: this.fields.find(item => item.name === 'password').element.value,
+                        })
+                    });
+                    // ловим ошибку ответа сервера
+                    if (response.status >= 200 && response.status < 300) {
+                        throw new Error(response.message)
+                    }
+
+                    const result = await response.json()
+                    if (result) {
+                        if (result.error || result.user) {
+                            throw new Error(result.message);
+                        }
+                        location.href = '#/choice'; //переводим пользователя на новую страницу
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+
+            } else {
+
+            }
         }
     }
 }
