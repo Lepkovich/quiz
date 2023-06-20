@@ -1,4 +1,6 @@
 import {CustomHttp} from "../services/custom-http.js";
+import {Auth} from "../services/auth.js";
+import config from "../../config/config.js";
 
 export class Form {
 
@@ -95,7 +97,7 @@ export class Form {
             if (this.page === 'signup'){
                 //закидываем на бэкенд в body введенные поля пользователя:
                 try {
-                    const result = await CustomHttp.request('http://localhost:3000/api/signup', "POST", {
+                    const result = await CustomHttp.request(config.host + '/signup', "POST", {
                         name: this.fields.find(item => item.name === 'name').element.value,
                         lastName: this.fields.find(item => item.name === 'lastName').element.value,
                         email: this.fields.find(item => item.name === 'email').element.value,
@@ -113,7 +115,23 @@ export class Form {
                 }
 
             } else {
+                try {
+                    const result = await CustomHttp.request(config.host +  '/login', "POST", {
+                        email: this.fields.find(item => item.name === 'email').element.value,
+                        password: this.fields.find(item => item.name === 'password').element.value,
+                    });
 
+                    if (result) {
+                        if (result.error || !result.accessToken || !result.refreshToken || !result.fullName || !result.userId)  {
+                            throw new Error(result.message);
+                        }
+
+                        Auth.setTokens(result.accessToken, result.refreshToken);
+                        location.href = '#/choice'; //переводим пользователя на новую страницу
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
             }
         }
     }
