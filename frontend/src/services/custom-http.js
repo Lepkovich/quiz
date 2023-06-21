@@ -25,7 +25,7 @@ export class CustomHttp {
 
         const response = await fetch(url, params); //получаем ответ от сервера
         // ловим ошибку ответа сервера
-        if (response.status < 200 && response.status >= 300) {
+        if (response.status < 200 || response.status >= 300) {
             if (response.status === 401) { //если ответ сервера unauthorized
                 const result = await Auth.processUnauthorizedResponse();
                 if (result) {

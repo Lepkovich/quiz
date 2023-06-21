@@ -22,16 +22,21 @@ export class Auth {
                 if (result && !result.error) {
                     this.setTokens(result.accessToken, result.refreshToken);
                     return true;
-                } else {
-                    throw new Error(result.message )
                 }
             }
         }
+
+        this.removeTokens(); //если запрос с ошибкой, удалим токены
+        location.href = '#/'; //и отправлять на главную
         return false;
     }
 
     static setTokens(accessToken, refreshToken) {
         localStorage.setItem(this.accessTokenKey, accessToken)
         localStorage.setItem(this.refreshTokenKey, refreshToken)
+    }
+    static removeTokens() {
+        localStorage.removeItem(this.accessTokenKey)
+        localStorage.removeItem(this.refreshTokenKey)
     }
 }
