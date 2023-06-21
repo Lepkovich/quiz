@@ -4,6 +4,7 @@ export class Auth {
 
     static accessTokenKey = 'accessToken';
     static refreshTokenKey = 'refreshToken';
+    static userInfoKey = 'userInfo';
 
 
     static async processUnauthorizedResponse() {
@@ -31,6 +32,10 @@ export class Auth {
         return false;
     }
 
+    static async logOut(){
+
+    }
+
     static setTokens(accessToken, refreshToken) {
         localStorage.setItem(this.accessTokenKey, accessToken)
         localStorage.setItem(this.refreshTokenKey, refreshToken)
@@ -41,13 +46,13 @@ export class Auth {
     }
 
     static setUserInfo(info) {
-        localStorage.setItem('userInfo', JSON.stringify(info)); //хранить объект в localStorage нельзя, поэтому преобразуем пользователя в строку
+        localStorage.setItem(this.userInfoKey, JSON.stringify(info)); //хранить объект в localStorage нельзя, поэтому преобразуем пользователя в строку
     }
 
     static getUserInfo() {
-        const userInfo = localStorage.getItem('userInfo');
+        const userInfo = localStorage.getItem(userInfoKey);
         if (userInfo) {
-            return JSON.parse(userInfo);
+            return JSON.parse(this.userInfoKey);
         }
         return null;
 
