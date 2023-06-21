@@ -89,3 +89,23 @@ a.button {
     line-height: 16px;
     color: #DCDCF3;
 }
+.header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.profile {
+    display: flex;
+    align-items: center;
+}
+.profile-img {
+    margin-right: 5px;
+}
+.profile-user {
+    font-size: 18px;
+    line-height: 18px;
+}
+.profile-logout {
+    font-size: 12px;
+    line-height: 12px;
+}

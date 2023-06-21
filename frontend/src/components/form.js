@@ -93,32 +93,34 @@ export class Form {
 
     async processForm() {
         if (this.validateForm()) {
+            // выносим отдельно поиск значений email и password, потому что они нужны и при регистрации и при входе.
+            const email = this.fields.find(item => item.name === 'email').element.value;
+            const password = this.fields.find(item => item.name === 'password').element.value;
 
-            if (this.page === 'signup'){
+            if (this.page === 'signup'){ //если мы на странице signup
                 //закидываем на бэкенд в body введенные поля пользователя:
                 try {
                     const result = await CustomHttp.request(config.host + '/signup', "POST", {
                         name: this.fields.find(item => item.name === 'name').element.value,
                         lastName: this.fields.find(item => item.name === 'lastName').element.value,
-                        email: this.fields.find(item => item.name === 'email').element.value,
-                        password: this.fields.find(item => item.name === 'password').element.value,
+                        email: email,
+                        password: password,
                     });
 
                     if (result) {
                         if (result.error || !result.user) {
                             throw new Error(result.message);
                         }
-                        location.href = '#/choice'; //переводим пользователя на новую страницу
                     }
                 } catch (error) {
-                    console.log(error);
+                    return console.log(error); // нужно выйти из функции, если ошибка при регистрации
                 }
-
-            } else {
+            }
+                //и в любом случае пытаемся авторизоваться
                 try {
                     const result = await CustomHttp.request(config.host +  '/login', "POST", {
-                        email: this.fields.find(item => item.name === 'email').element.value,
-                        password: this.fields.find(item => item.name === 'password').element.value,
+                        email: email,
+                        password: password,
                     });
 
                     if (result) {
@@ -127,12 +129,15 @@ export class Form {
                         }
 
                         Auth.setTokens(result.accessToken, result.refreshToken);
+                        Auth.setUserInfo({
+                            fullName: result.fullName,
+                            userId: result.userId
+                        })
                         location.href = '#/choice'; //переводим пользователя на новую страницу
                     }
                 } catch (error) {
-                    console.log(error);
+                     console.log(error);
                 }
             }
         }
-    }
 }

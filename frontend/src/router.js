@@ -3,9 +3,18 @@ import {Choice} from "./components/choice.js";
 import {Test} from "./components/test.js";
 import {Result} from "./components/result.js";
 import {Answers} from "./components/answers.js";
+import {Auth} from "./services/auth.js";
 
 export class Router {
+
     constructor() {
+
+        this.contentElement = document.getElementById('content'),
+        this.stylesElement = document.getElementById('styles'),
+        this.titleElement = document.getElementById('title'),
+        this.profileElement = document.getElementById('profile'),
+        this.profileFullNameElement = document.getElementById('profile-full-name'),
+
         this.routes = [
             {
                 route: '#/',
@@ -81,10 +90,17 @@ export class Router {
             return; // обязательно нужно завершить эту функцию, чтобы дальше ничего за ней не происходило.
         }
 
-        document.getElementById('content').innerHTML =
-                       await fetch(newRoute.template).then(response => response.text());
-        document.getElementById('styles').setAttribute('href', newRoute.styles);
-        document.getElementById('title').innerText = newRoute.title;
+        this.contentElement.innerHTML = await fetch(newRoute.template).then(response => response.text());
+        this.stylesElement.setAttribute('href', newRoute.styles);
+        this.titleElement.innerText = newRoute.title;
+        const userInfo = Auth.getUserInfo(); //берем из localStorage информацию о пользователе
+        const accessToken = localStorage.getItem(Auth.accessTokenKey); //проверяем есть ли в localStorage accessTokenKey
+        if (userInfo && accessToken) { //если да
+            this.profileElement.style.display = 'flex'; //отображаем блок пользователя
+            this.profileFullNameElement.innerText = userInfo.fullName; //пишем имя пользователя
+        } else {
+            this.profileElement.style.display = 'none'; //скрываем блок пользователя
+        }
         newRoute.load();
     }
 }

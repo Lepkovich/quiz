@@ -39,4 +39,17 @@ export class Auth {
         localStorage.removeItem(this.accessTokenKey)
         localStorage.removeItem(this.refreshTokenKey)
     }
+
+    static setUserInfo(info) {
+        localStorage.setItem('userInfo', JSON.stringify(info)); //хранить объект в localStorage нельзя, поэтому преобразуем пользователя в строку
+    }
+
+    static getUserInfo() {
+        const userInfo = localStorage.getItem('userInfo');
+        if (userInfo) {
+            return JSON.parse(userInfo);
+        }
+        return null;
+
+    }
 }
