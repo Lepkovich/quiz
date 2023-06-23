@@ -8,6 +8,11 @@ export class Form {
         this.agreeElement = null;
         this.processElement = null;
         this.page = page;
+        const accessToken = localStorage.getItem(Auth.accessTokenKey); //проверяем есть ли в localStorage accessTokenKey
+        if(accessToken){
+            location.href = '#/choice';
+            return;
+        }
 
         this.fields = [  //два поля у нас будут на обоих страницах
             {
