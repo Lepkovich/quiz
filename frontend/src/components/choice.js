@@ -66,8 +66,7 @@ export class Choice {
     chooseQuiz(element) {
         const dataID = element.getAttribute('data-id')
         if (dataID) {
-            location.href = '#/test?name=' + this.routeParams.name + '&lastName=' + this.routeParams.lastName
-                + '&email=' + this.routeParams.email +'&id=' + dataID;
+            location.href = '#/test?id=' + dataID;
         }
     }
 }

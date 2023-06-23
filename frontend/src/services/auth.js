@@ -33,7 +33,25 @@ export class Auth {
     }
 
     static async logOut(){
-
+        const refreshToken =  localStorage.getItem(this.refreshTokenKey);
+        if (refreshToken) {
+            const response = await fetch(config.host + '/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({refreshToken: refreshToken})
+            })
+            if (response && response.status === 200) {
+                const result = await response.json();
+                if (result && !result.error) {
+                    Auth.removeTokens();
+                    localStorage.removeItem(Auth.userInfoKey);
+                    return true;
+                }
+            }
+        }
     }
 
     static setTokens(accessToken, refreshToken) {
@@ -50,9 +68,9 @@ export class Auth {
     }
 
     static getUserInfo() {
-        const userInfo = localStorage.getItem(userInfoKey);
+        const userInfo = localStorage.getItem(this.userInfoKey);
         if (userInfo) {
-            return JSON.parse(this.userInfoKey);
+            return JSON.parse(userInfo);
         }
         return null;
 

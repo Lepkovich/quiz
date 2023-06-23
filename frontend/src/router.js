@@ -84,8 +84,7 @@ export class Router {
     async openRoute() { // функция выберет какой роут загрузить исходя из текста в адресной строке
         const urlRoute =  window.location.hash.split('?')[0];//split разделит адресную строку до ?, а [0] возьмет первую часть
         if (urlRoute === '#/logout') {
-             Auth.removeTokens();
-             localStorage.removeItem(Auth.userInfoKey);
+            await Auth.logOut();
             window.location.href = '#/';
             return;
 
