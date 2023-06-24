@@ -8,39 +8,9 @@ export class Answers {
     constructor() {
         this.quiz = null;
         this.routeParams = UrlManager.getQueryParams();
+        this.userData = null;
         this.init();
-//с backend запрашиваем ответы на вопросы
-        /*
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', 'https://testologia.site/get-quiz-right?id=' + this.routeParams.id, false);
-        xhr.send();
-        if (xhr.status === 200 && xhr.responseText) {
-            try {
-              rightAnswers = JSON.parse(xhr.responseText); //
-            } catch (e) {
-                location.href = '#/';
-            }
-        } else {
-            location.href = '#/';
-        }
-        */
 
-//с backend запрашиваем наш quiz с вариантами ответов
-        /*
-        xhr.open('GET', 'https://testologia.site/get-quiz?id=' + this.routeParams.id, false);
-        xhr.send();
-        if (xhr.status === 200 && xhr.responseText) {
-            try {
-                this.quiz = JSON.parse(xhr.responseText);
-            } catch (e) {
-                location.href = '#/';
-            }
-            this.showQuestions(userAnswers, rightAnswers);
-        } else {
-            location.href = '#/';
-        }
-
-         */
     }
     async init() {
         const userInfo = Auth.getUserInfo(); //берем из localStorage информацию о пользователе
@@ -48,6 +18,8 @@ export class Answers {
         if(!userInfo || !userEmail){
             location.href = '#/';
         }
+        this.userData = userInfo.fullName + ', ' + userEmail;
+
         if(this.routeParams.id) {
             try {
                 const result = await CustomHttp.request(config.host + '/tests/' + this.routeParams.id + '/result/details?userId=' + userInfo.userId);
@@ -65,27 +37,24 @@ export class Answers {
         }
     }
     showQuestions() {
-        document.getElementById('pre-title').innerText = this.quiz.name;
+        document.getElementById('pre-title').innerText = this.quiz.test.name;
+        document.getElementById('user').querySelector('span').textContent = this.userData;
+
         const answersBlock = document.getElementById('answers-block')
-        console.log(this.quiz);
+
 //создаем структуру html
         for (let i = 0; i < this.quiz.test.questions.length; i++) {
-// проверим на совпадение userAnswer с rightAnswer
-            let isAnswerCorrect = true;
-            if (userAnswers[i] !== rightAnswers[i]) {
-                isAnswerCorrect = false;
-            } else {
-            }
+
 // Создаем div-элемент с class="test-answers-block-title" и id="title"
             const div = document.createElement("div");
             div.classList.add("test-answers-block-title");
             div.id = "question";
-            div.innerHTML = '<span>Вопрос ' + (i + 1) + ':</span> ' + this.quiz.questions[i].question;
+            div.innerHTML = '<span>Вопрос ' + (i + 1) + ':</span> ' + this.quiz.test.questions[i].question;
 
 // Добавляем созданный div-элемент в answersBlock
             answersBlock.appendChild(div);
 
-            this.quiz.questions[i].answers.forEach(item => {
+            this.quiz.test.questions[i].answers.forEach(item => {
 // создаем div-элемент с class="test-answers-block-options" и id="options"
                 const div = document.createElement("div");
                 div.classList.add("test-answers-block-options");
@@ -96,11 +65,12 @@ export class Answers {
                 option1.classList.add("test-answers-block-option");
 
 // создаем кружок перед ответом
+
                 const circle = document.createElement("div");
                 circle.classList.add("test-answers-block-option-circle");
-                if (isAnswerCorrect && item.id === rightAnswers[i]) {
+                if (item.correct === true) {
                     circle.classList.add("correct-answer-circle");
-                } else if (item.id === userAnswers[i]) {
+                } else if (item.correct === false) {
                     circle.classList.add("wrong-answer-circle");
                 }
                 option1.appendChild(circle);
@@ -108,9 +78,9 @@ export class Answers {
 // создаем текст для варианта ответа
                 const optionText = document.createElement("div");
                 optionText.classList.add("test-answers-block-option-text");
-                if (isAnswerCorrect && item.id === rightAnswers[i]) {
+                if (item.correct === true) {
                     optionText.classList.add("correct-answer-text");
-                } else if (item.id === userAnswers[i]) {
+                } else if (item.correct === false) {
                     optionText.classList.add("wrong-answer-text");
                 }
                 optionText.innerText = item.answer;

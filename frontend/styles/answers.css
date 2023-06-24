@@ -22,7 +22,16 @@
 .test-answers-title {
     margin-top: 60px;
 }
-
+.user {
+    color: #333;
+    font-size: 20px;
+    margin-top: 10px;
+}
+.user span {
+    color: #6933DC;
+    font-size: 20px;
+    font-family: "Museo Sans Cyrl Bold", sans-serif;
+}
 .test-answers-block-title {
     font-family: "Museo Sans Cyrl Bold", sans-serif;
     font-size: 36px;
