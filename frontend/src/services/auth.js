@@ -5,6 +5,7 @@ export class Auth {
     static accessTokenKey = 'accessToken';
     static refreshTokenKey = 'refreshToken';
     static userInfoKey = 'userInfo';
+    static userEmail = 'userEmail'
 
 
     static async processUnauthorizedResponse() {
@@ -65,6 +66,10 @@ export class Auth {
 
     static setUserInfo(info) {
         localStorage.setItem(this.userInfoKey, JSON.stringify(info)); //хранить объект в localStorage нельзя, поэтому преобразуем пользователя в строку
+    }
+
+    static setUserEmail(email) {
+        localStorage.setItem(this.userEmail, email);
     }
 
     static getUserInfo() {

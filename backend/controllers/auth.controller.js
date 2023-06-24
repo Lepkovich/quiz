@@ -41,7 +41,7 @@ class AuthController {
             res.status(201).json({
                 user: {id: user.id, email: user.email, name: user.name, lastName: user.lastName},
                 error: false,
-                message: "Account created sucessfully"
+                message: "Account created successfully"
             });
         } catch (err) {
             console.log(err);
@@ -77,8 +77,9 @@ class AuthController {
                 accessToken,
                 refreshToken,
                 fullName: user.name + ' ' + user.lastName,
+                email: user.email,
                 userId: user.id,
-                message: "Logged in sucessfully",
+                message: "Logged in successfully",
             });
         } catch (err) {
             console.log(err);

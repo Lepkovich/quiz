@@ -138,6 +138,7 @@ export class Form {
                             fullName: result.fullName,
                             userId: result.userId
                         })
+                        Auth.setUserEmail(result.email);
                         location.href = '#/choice'; //переводим пользователя на новую страницу
                     }
                 } catch (error) {
