@@ -1,13 +1,16 @@
 import {UrlManager} from "../utils/url-manager.js";
+import {Auth} from "../services/auth.js";
+import {CustomHttp} from "../services/custom-http.js";
+import config from "../../config/config.js";
 
 export class Answers {
-    constructor() {
-        this.routeParams = UrlManager.getQueryParams();
-        UrlManager.checkAnswersData(this.routeParams);
-        const userAnswers = this.routeParams.answers.split(',').map(Number);
-        let rightAnswers;
 
+    constructor() {
+        this.quiz = null;
+        this.routeParams = UrlManager.getQueryParams();
+        this.init();
 //с backend запрашиваем ответы на вопросы
+        /*
         const xhr = new XMLHttpRequest();
         xhr.open('GET', 'https://testologia.site/get-quiz-right?id=' + this.routeParams.id, false);
         xhr.send();
@@ -20,8 +23,10 @@ export class Answers {
         } else {
             location.href = '#/';
         }
+        */
 
 //с backend запрашиваем наш quiz с вариантами ответов
+        /*
         xhr.open('GET', 'https://testologia.site/get-quiz?id=' + this.routeParams.id, false);
         xhr.send();
         if (xhr.status === 200 && xhr.responseText) {
@@ -34,15 +39,37 @@ export class Answers {
         } else {
             location.href = '#/';
         }
-    }
 
-    showQuestions(userAnswers, rightAnswers) {
+         */
+    }
+    async init() {
+        const userInfo = Auth.getUserInfo(); //берем из localStorage информацию о пользователе
+        const userEmail = Auth.getUserEmail(); //берем из localStorage email
+        if(!userInfo || !userEmail){
+            location.href = '#/';
+        }
+        if(this.routeParams.id) {
+            try {
+                const result = await CustomHttp.request(config.host + '/tests/' + this.routeParams.id + '/result/details?userId=' + userInfo.userId);
+                // /api/tests/:id/result/details?userId=:userId
+                if(result) {
+                    if (result.error) {
+                        throw new Error(result.error);
+                    }
+                    this.quiz = result;
+                    this.showQuestions();
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    }
+    showQuestions() {
         document.getElementById('pre-title').innerText = this.quiz.name;
         const answersBlock = document.getElementById('answers-block')
-
-
+        console.log(this.quiz);
 //создаем структуру html
-        for (let i = 0; i < this.quiz.questions.length; i++) {
+        for (let i = 0; i < this.quiz.test.questions.length; i++) {
 // проверим на совпадение userAnswer с rightAnswer
             let isAnswerCorrect = true;
             if (userAnswers[i] !== rightAnswers[i]) {

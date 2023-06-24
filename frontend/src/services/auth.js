@@ -68,16 +68,21 @@ export class Auth {
         localStorage.setItem(this.userInfoKey, JSON.stringify(info)); //хранить объект в localStorage нельзя, поэтому преобразуем пользователя в строку
     }
 
-    static setUserEmail(email) {
-        localStorage.setItem(this.userEmail, email);
-    }
-
     static getUserInfo() {
         const userInfo = localStorage.getItem(this.userInfoKey);
         if (userInfo) {
             return JSON.parse(userInfo);
         }
         return null;
-
+    }
+    static setUserEmail(email) {
+        localStorage.setItem(this.userEmail, email);
+    }
+    static getUserEmail() {
+        const userEmail = localStorage.getItem(this.userEmail);
+        if (userEmail) {
+            return userEmail;
+        }
+        return null;
     }
 }
