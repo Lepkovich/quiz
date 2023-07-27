@@ -1,7 +1,7 @@
-import {UrlManager} from "../utils/url-manager.js";
-import {Auth} from "../services/auth.js";
-import {CustomHttp} from "../services/custom-http.js";
-import config from "../../config/config.js";
+import {UrlManager} from "../utils/url-manager.ts";
+import {Auth} from "../services/auth.ts";
+import {CustomHttp} from "../services/custom-http.ts";
+import config from "../../config/config";
 
 export class Answers {
 

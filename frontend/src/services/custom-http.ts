@@ -2,7 +2,7 @@
 //сервис для создания http-запроса на сервер (backend)
 // принимаем 3 параметра: url, method (по умолчанию GET) и body (по умолчанию null)
 
-import {Auth} from "./auth.js";
+import {Auth} from "./auth";
 
 export class CustomHttp {
     static async request(url, method = "GET", body =  null) {

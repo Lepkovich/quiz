@@ -1,4 +1,5 @@
-import config from "../../config/config.js";
+import config from "../../config/config";
+import {UserInfoType} from "../types/user-info.type";
 
 export class Auth {
 
@@ -64,12 +65,12 @@ export class Auth {
         localStorage.removeItem(this.refreshTokenKey)
     }
 
-    static setUserInfo(info) {
+    public static setUserInfo(info: UserInfoType): void {
         localStorage.setItem(this.userInfoKey, JSON.stringify(info)); //хранить объект в localStorage нельзя, поэтому преобразуем пользователя в строку
     }
 
-    static getUserInfo() {
-        const userInfo = localStorage.getItem(this.userInfoKey);
+    public static getUserInfo(): UserInfoType | null {
+        const userInfo: string | null = localStorage.getItem(this.userInfoKey);
         if (userInfo) {
             return JSON.parse(userInfo);
         }
