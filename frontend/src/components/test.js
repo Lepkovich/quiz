@@ -39,6 +39,7 @@ export class Test {
     }
 
     startQuiz() {
+
         this.progressBarElement = document.getElementById('progress-bar');
 
         this.questionTitleElement = document.getElementById('question-title');
