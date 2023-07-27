@@ -1,18 +1,20 @@
 import config from "../../config/config";
 import {UserInfoType} from "../types/user-info.type";
+import {RefreshResponseType} from "../types/refresh-response.type";
+import {LogoutResponseType} from "../types/logout-response.type";
 
 export class Auth {
 
-    static accessTokenKey = 'accessToken';
-    static refreshTokenKey = 'refreshToken';
-    static userInfoKey = 'userInfo';
-    static userEmail = 'userEmail'
+    public static accessTokenKey: string = 'accessToken';
+    private static refreshTokenKey: string = 'refreshToken';
+    private static userInfoKey: string = 'userInfo';
+    private static userEmail: string = 'userEmail'
 
 
-    static async processUnauthorizedResponse() {
-        const refreshToken =  localStorage.getItem(this.refreshTokenKey);
+    public static async processUnauthorizedResponse(): Promise<boolean> {
+        const refreshToken: string | null =  localStorage.getItem(this.refreshTokenKey);
         if (refreshToken) {
-            const response = await fetch(config.host + '/refresh', {
+            const response: Response = await fetch(config.host + '/refresh', {
                 method: 'POST',
                 headers: {
                     'Content-type': 'application/json',
@@ -21,8 +23,8 @@ export class Auth {
                 body: JSON.stringify({refreshToken: refreshToken})
             })
             if (response && response.status === 200) {
-                const result = await response.json();
-                if (result && !result.error) {
+                const result: RefreshResponseType | null = await response.json();
+                if (result && !result.error && result.accessToken && result.refreshToken ) {
                     this.setTokens(result.accessToken, result.refreshToken);
                     return true;
                 }
@@ -34,10 +36,10 @@ export class Auth {
         return false;
     }
 
-    static async logOut(){
-        const refreshToken =  localStorage.getItem(this.refreshTokenKey);
+    public static async logOut():Promise<boolean> {
+        const refreshToken: string | null =  localStorage.getItem(this.refreshTokenKey);
         if (refreshToken) {
-            const response = await fetch(config.host + '/logout', {
+            const response: Response = await fetch(config.host + '/logout', {
                 method: 'POST',
                 headers: {
                     'Content-type': 'application/json',
@@ -46,21 +48,23 @@ export class Auth {
                 body: JSON.stringify({refreshToken: refreshToken})
             })
             if (response && response.status === 200) {
-                const result = await response.json();
+                const result: LogoutResponseType | any = await response.json();
                 if (result && !result.error) {
                     Auth.removeTokens();
-                    localStorage.removeItem(Auth.userInfoKey);
+                    localStorage.removeItem(this.userInfoKey);
                     return true;
                 }
             }
         }
+        return false;
     }
 
-    static setTokens(accessToken, refreshToken) {
+    public static setTokens(accessToken: string, refreshToken: string): void {
         localStorage.setItem(this.accessTokenKey, accessToken)
         localStorage.setItem(this.refreshTokenKey, refreshToken)
     }
-    static removeTokens() {
+
+    private static removeTokens(): void {
         localStorage.removeItem(this.accessTokenKey)
         localStorage.removeItem(this.refreshTokenKey)
     }
@@ -76,10 +80,14 @@ export class Auth {
         }
         return null;
     }
-    static setUserEmail(email) {
-        localStorage.setItem(this.userEmail, email);
+    public static setUserEmail(email: string | null): void { // дописывал сам
+        if (email) {
+            localStorage.setItem(this.userEmail, email);
+        } else {
+            localStorage.setItem(this.userEmail, 'none'); //если email не пришел, запишем в localStorage 'none'
+        }
     }
-    static getUserEmail() {
+    public static getUserEmail(): string | null { // дописывал сам
         const userEmail = localStorage.getItem(this.userEmail);
         if (userEmail) {
             return userEmail;

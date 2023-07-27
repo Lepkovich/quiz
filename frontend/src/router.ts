@@ -91,9 +91,13 @@ export class Router {
     public async openRoute(): Promise<void> { // функция выберет какой роут загрузить исходя из текста в адресной строке
         const urlRoute: string =  window.location.hash.split('?')[0];//split разделит адресную строку до ?, а [0] возьмет первую часть
         if (urlRoute === '#/logout') {
-            await Auth.logOut();
-            window.location.href = '#/';
-            return;
+            const result: boolean =  await Auth.logOut();
+            if (result) {
+                window.location.href = '#/';
+                return;
+            } else {
+                //...
+            }
 
         }
         const newRoute: RouteType | undefined = this.routes.find(item => {
@@ -116,7 +120,7 @@ export class Router {
         this.stylesElement.setAttribute('href', newRoute.styles);
         this.titleElement.innerText = newRoute.title;
         const userInfo: UserInfoType | null = Auth.getUserInfo(); //берем из localStorage информацию о пользователе
-        const accessToken = localStorage.getItem(Auth.accessTokenKey); //проверяем есть ли в localStorage accessTokenKey
+        const accessToken: string | null = localStorage.getItem(Auth.accessTokenKey); //проверяем есть ли в localStorage accessTokenKey
         if (userInfo && accessToken) { //если да
             this.profileElement.style.display = 'flex'; //отображаем блок пользователя
             this.profileFullNameElement.innerText = userInfo.fullName; //пишем имя пользователя
