@@ -1,35 +1,17 @@
-export class UrlManager {
-    static getQueryParams() {
-        const qs = document.location.hash.split('+').join(' ');
+import {QueryParamsType} from "../types/query-params.type";
 
-        let params = {},
-            tokens,
-            re = /[?&]([^=]+)=([^&]*)/g;
+export class UrlManager {
+    public static getQueryParams(): QueryParamsType {
+        const qs:string = document.location.hash.split('+').join(' ');
+
+        let params: QueryParamsType = {},
+            tokens: RegExpExecArray | null,
+            re: RegExp = /[?&]([^=]+)=([^&]*)/g;
 
         while (tokens = re.exec(qs)) {
             params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
         }
 
         return params;
-    }
-
-    static checkUserData(params) {
-
-        if (!params.name || !params.lastName || !params.email) {
-            location.href = '#/';
-        }
-    };
-
-    static checkResultData(params) {
-
-        if (!params.score || !params.total || !params.id || !params.answers) {
-            location.href = '#/';
-        }
-    }
-    static checkAnswersData(params) {
-
-        if (!params.id || !params.answers) {
-            location.href = '#/';
-        }
     }
 }
