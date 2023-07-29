@@ -1,9 +1,25 @@
-import {UrlManager} from "../utils/url-manager.ts";
-import {CustomHttp} from "../services/custom-http.ts";
+import {UrlManager} from "../utils/url-manager";
+import {CustomHttp} from "../services/custom-http";
 import config from "../../config/config";
-import {Auth} from "../services/auth.ts";
+import {Auth} from "../services/auth";
+import {QueryParamsType} from "../types/query-params.type";
+import {QuizType} from "../types/quiz.type";
+import {UserResultType} from "../types/user-result.type";
+import {DefaultResponseType} from "../types/default-response.type";
 
 export class Test {
+    private progressBarElement: HTMLElement | null;
+    private questionTitleElement: HTMLElement | null;
+    private nextButtonElement: HTMLElement | null;
+    private passButtonElement: HTMLElement | null;
+    private prevButtonElement: HTMLElement | null;
+    private optionsElement: HTMLElement | null;
+    private quiz: QuizType | null;
+    private currentQuestionIndex: number;
+    readonly userResult: UserResultType[];
+    private routeParams: QueryParamsType;
+
+
     constructor() {
         this.quiz = null;
         this.progressBarElement = null;
@@ -14,22 +30,21 @@ export class Test {
         this.optionsElement = null;
         this.currentQuestionIndex = 1;
         this.userResult = [];
-
         this.routeParams = UrlManager.getQueryParams();
         this.init();
 
     }
 
-    async init() {
+    private async init(): Promise<void> {
         if (this.routeParams.id) {
             try {
-                const result = await CustomHttp.request(config.host + '/tests/' + this.routeParams.id);
+                const result: DefaultResponseType | QuizType = await CustomHttp.request(config.host + '/tests/' + this.routeParams.id);
 
                 if (result) {
-                    if (result.error) {
-                        throw new Error(result.error);
+                    if ((result as DefaultResponseType).error !== undefined) {
+                        throw new Error((result as DefaultResponseType).message);
                     }
-                    this.quiz = result;
+                    this.quiz = result as QuizType;
                     this.startQuiz();
                 }
             } catch (error) {
@@ -38,7 +53,7 @@ export class Test {
         }
     }
 
-    startQuiz() {
+    private startQuiz(): void {
 
         this.progressBarElement = document.getElementById('progress-bar');
 

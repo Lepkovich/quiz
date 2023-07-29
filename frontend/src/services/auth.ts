@@ -80,7 +80,7 @@ export class Auth {
         }
         return null;
     }
-    public static setUserEmail(email: string | null): void { // дописывал сам
+    public static setUserEmail(email: string | undefined): void { // дописывал сам
         if (email) {
             localStorage.setItem(this.userEmail, email);
         } else {

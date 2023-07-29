@@ -3,10 +3,12 @@ import {Auth} from "../services/auth";
 import config from "../../config/config";
 import * as path from "path";
 import {FormFieldType} from "../types/form-field.type";
+import {SignupResponseType} from "../types/signup-response.type";
+import {LoginResponseType} from "../types/login-response.type";
 
 export class Form {
-    readonly agreeElement: HTMLElement | null;
-    private processElement: HTMLElement | null;
+    readonly agreeElement: HTMLInputElement | null;
+    readonly processElement: HTMLElement | null;
     readonly page: 'signup' | 'login';
     private fields: FormFieldType[] = [];
 
@@ -76,7 +78,7 @@ export class Form {
 
 
         if (this.page === 'signup') {
-            this.agreeElement = document.getElementById('agree');
+            this.agreeElement = document.getElementById('agree') as HTMLInputElement;
             if (this.agreeElement) {
                 this.agreeElement.onchange = function () {
                     that.validateForm();
@@ -99,30 +101,32 @@ export class Form {
         this.validateForm();
     }
 
-    validateForm() {
-        const validForm = this.fields.every(item => item.valid);
-        const isValid = this.agreeElement ? this.agreeElement.checked && validForm : validForm;
+    private validateForm(): boolean {
+        const validForm: boolean = this.fields.every(item => item.valid);
+        const isValid: boolean = this.agreeElement ? this.agreeElement.checked && validForm : validForm;
         // если this.agreeElement true, то проверяем checked && validForm, иначе только validForm
-        if (isValid) {
-            this.processElement.removeAttribute('disabled')
-        } else {
-            this.processElement.setAttribute('disabled', 'disabled')
+        if (this.processElement) {
+            if (isValid) {
+                this.processElement.removeAttribute('disabled')
+            } else {
+                this.processElement.setAttribute('disabled', 'disabled')
+            }
         }
         return isValid;
     }
 
-    async processForm() {
+    private async processForm(): Promise<void> {
         if (this.validateForm()) {
             // выносим отдельно поиск значений email и password, потому что они нужны и при регистрации и при входе.
-            const email = this.fields.find(item => item.name === 'email').element.value;
-            const password = this.fields.find(item => item.name === 'password').element.value;
+            const email = this.fields.find(item => item.name === 'email')?.element?.value;
+            const password = this.fields.find(item => item.name === 'password')?.element?.value;
 
             if (this.page === 'signup') { //если мы на странице signup
                 //закидываем на бэкенд в body введенные поля пользователя:
                 try {
-                    const result = await CustomHttp.request(config.host + '/signup', "POST", {
-                        name: this.fields.find(item => item.name === 'name').element.value,
-                        lastName: this.fields.find(item => item.name === 'lastName').element.value,
+                    const result: SignupResponseType = await CustomHttp.request(config.host + '/signup', "POST", {
+                        name: this.fields.find(item => item.name === 'name')?.element?.value,
+                        lastName: this.fields.find(item => item.name === 'lastName')?.element?.value,
                         email: email,
                         password: password,
                     });
@@ -133,12 +137,13 @@ export class Form {
                         }
                     }
                 } catch (error) {
-                    return console.log(error); // нужно выйти из функции, если ошибка при регистрации
+                    console.log(error); // нужно выйти из функции, если ошибка при регистрации
+                    return;
                 }
             }
             //и в любом случае пытаемся авторизоваться
             try {
-                const result = await CustomHttp.request(config.host + '/login', "POST", {
+                const result: LoginResponseType = await CustomHttp.request(config.host + '/login', "POST", {
                     email: email,
                     password: password,
                 });
