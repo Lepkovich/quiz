@@ -3,7 +3,7 @@ import {CustomHttp} from "../services/custom-http";
 import config from "../../config/config";
 import {Auth} from "../services/auth";
 import {QueryParamsType} from "../types/query-params.type";
-import {QuizType} from "../types/quiz.type";
+import {QuizAnswerType, QuizQuestionType, QuizType} from "../types/quiz.type";
 import {UserResultType} from "../types/user-result.type";
 import {DefaultResponseType} from "../types/default-response.type";
 
@@ -18,6 +18,7 @@ export class Test {
     private currentQuestionIndex: number;
     readonly userResult: UserResultType[];
     private routeParams: QueryParamsType;
+    private interval: number = 0;
 
 
     constructor() {
@@ -39,7 +40,6 @@ export class Test {
         if (this.routeParams.id) {
             try {
                 const result: DefaultResponseType | QuizType = await CustomHttp.request(config.host + '/tests/' + this.routeParams.id);
-
                 if (result) {
                     if ((result as DefaultResponseType).error !== undefined) {
                         throw new Error((result as DefaultResponseType).message);
@@ -55,78 +55,101 @@ export class Test {
 
     private startQuiz(): void {
 
+        if (!this.quiz) return;
+
         this.progressBarElement = document.getElementById('progress-bar');
 
         this.questionTitleElement = document.getElementById('question-title');
         this.optionsElement = document.getElementById('options');
 
         this.nextButtonElement = document.getElementById('next');
-        this.nextButtonElement.onclick = this.move.bind(this, 'next');
+        if (this.nextButtonElement) {
+            this.nextButtonElement.onclick = this.move.bind(this, 'next');
+        }
 
         this.passButtonElement = document.getElementById('pass');
-        this.passButtonElement.onclick = this.move.bind(this, 'pass');
+        if (this.passButtonElement) {
+            this.passButtonElement.onclick = this.move.bind(this, 'pass');
+        }
 
         this.prevButtonElement = document.getElementById('prev');
-        this.prevButtonElement.onclick = this.move.bind(this, 'prev');
+        if (this.prevButtonElement) {
+            this.prevButtonElement.onclick = this.move.bind(this, 'prev');
+        }
 
-        document.getElementById('pre-title').innerText = this.quiz.name;
+        const preTitleElement: HTMLElement | null = document.getElementById('pre-title');
+        if (preTitleElement) {
+            preTitleElement.innerText = this.quiz.name;
+        }
 
         this.prepareProgressBar();
         this.showQuestion();
 
-        const timerElement = document.getElementById('timer');
-        let seconds = 6000;
-        this.interval = setInterval(function () {
+        const timerElement: HTMLElement | null = document.getElementById('timer');
+        let seconds = 59;
+        const that: Test = this;
+        this.interval = window.setInterval(function () {
             seconds--;
-            timerElement.innerText = seconds;
+            if (timerElement) {
+                timerElement.innerText = seconds.toString();
+            }
             if (seconds === 0) {
-                clearInterval(this.interval);
-                this.complete();
+                clearInterval(that.interval);
+                that.complete();
             }
         }.bind(this), 1000);
     }
 
-    prepareProgressBar() {
+    private prepareProgressBar(): void {
+        if (!this.quiz) return;
+
         // создаем структуру html документа "test-progress-bar"
         for (let i = 0; i < this.quiz.questions.length; i++) {
-            const itemElement = document.createElement('div');
+            const itemElement: HTMLElement | null = document.createElement('div');
             itemElement.className = 'test-progress-bar-item' + (i === 0 ? ' active' : '');
 
-            const itemCircleElement = document.createElement('div');
+            const itemCircleElement: HTMLElement | null = document.createElement('div');
             itemCircleElement.className = 'test-progress-bar-item-circle';
 
-            const itemTextElement = document.createElement('div');
+            const itemTextElement: HTMLElement | null = document.createElement('div');
             itemTextElement.className = 'test-progress-bar-item-text';
             itemTextElement.innerText = 'Вопрос ' + (i + 1);
 
             itemElement.appendChild(itemCircleElement);
             itemElement.appendChild(itemTextElement);
-            this.progressBarElement.appendChild(itemElement);
-
+            if (this.progressBarElement) {
+                this.progressBarElement.appendChild(itemElement);
+            }
         }
-
     }
 
-    showQuestion() {
-        const activeQuestion = this.quiz.questions[this.currentQuestionIndex - 1];
-        this.questionTitleElement.innerHTML = '<span>Вопрос ' + this.currentQuestionIndex
-            + ':</span> ' + activeQuestion.question;
-        this.optionsElement.innerHTML = ''; //удалим текущие ответы
-        const that = this;
-        const chosenOption = this.userResult.find(item => item.questionId === activeQuestion.id); //чтобы отрисовать сделанный ранее пользователем выбор radio, ищем есть в массиве этот выбор
+    private showQuestion(): void {
+        if (!this.quiz) return;
+        const activeQuestion: QuizQuestionType = this.quiz.questions[this.currentQuestionIndex - 1];
+        if (this.questionTitleElement) {
+            this.questionTitleElement.innerHTML = '<span>Вопрос ' + this.currentQuestionIndex
+                + ':</span> ' + activeQuestion.question;
+        }
+        if (this.optionsElement) {
+            this.optionsElement.innerHTML = ''; //удалим текущие ответы
+        }
+
+        const that: Test = this;
+        const chosenOption: UserResultType | undefined = this.userResult.find(item => item.questionId === activeQuestion.id); //чтобы отрисовать сделанный ранее пользователем выбор radio, ищем есть в массиве этот выбор
+
         //и размещаем структуру html с вариантами ответов
-        activeQuestion.answers.forEach(answer => {
+        activeQuestion.answers.forEach((answer:QuizAnswerType) => {
 //создаем строку <div class="test-question-option">
-            const optionElement = document.createElement('div');
+            const optionElement: HTMLElement | null = document.createElement('div');
             optionElement.className = 'test-question-option';
 //создаем строку <input type="radio" id="answer-one" name="answer">
             const inputId = 'answer-' + answer.id
-            const inputElement = document.createElement('input');
+            const inputElement: HTMLElement | null = document.createElement('input');
             inputElement.className = 'option-answer';
             inputElement.setAttribute('id', inputId);
             inputElement.setAttribute('type', 'radio');
             inputElement.setAttribute('name', 'answer');
-            inputElement.setAttribute('value', answer.id);
+            inputElement.setAttribute('value', answer.id.toString());
             if (chosenOption && chosenOption.chosenAnswerId === answer.id) {
                 inputElement.setAttribute('checked', 'checked');
             }
