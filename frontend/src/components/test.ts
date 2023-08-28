@@ -6,6 +6,9 @@ import {QueryParamsType} from "../types/query-params.type";
 import {QuizAnswerType, QuizQuestionType, QuizType} from "../types/quiz.type";
 import {UserResultType} from "../types/user-result.type";
 import {DefaultResponseType} from "../types/default-response.type";
+import {ActionTestType} from "../types/action-test.type";
+import {UserInfoType} from "../types/user-info.type";
+import {PassTestResponseType} from "../types/pass-test-response.type";
 
 export class Test {
     private progressBarElement: HTMLElement | null;
@@ -64,17 +67,17 @@ export class Test {
 
         this.nextButtonElement = document.getElementById('next');
         if (this.nextButtonElement) {
-            this.nextButtonElement.onclick = this.move.bind(this, 'next');
+            this.nextButtonElement.onclick = this.move.bind(this, ActionTestType.next);
         }
 
         this.passButtonElement = document.getElementById('pass');
         if (this.passButtonElement) {
-            this.passButtonElement.onclick = this.move.bind(this, 'pass');
+            this.passButtonElement.onclick = this.move.bind(this, ActionTestType.pass);
         }
 
         this.prevButtonElement = document.getElementById('prev');
         if (this.prevButtonElement) {
-            this.prevButtonElement.onclick = this.move.bind(this, 'prev');
+            this.prevButtonElement.onclick = this.move.bind(this, ActionTestType.prev);
         }
 
         const preTitleElement: HTMLElement | null = document.getElementById('pre-title');
@@ -160,7 +163,7 @@ export class Test {
             }
 
 //создаем строку <label for="answer-one">Вариант ответа 1 </label>
-            const labelElement = document.createElement('label');
+            const labelElement: HTMLElement | null = document.createElement('label');
             labelElement.setAttribute('for', inputId);
             labelElement.innerText = answer.answer;
 
@@ -174,54 +177,70 @@ export class Test {
 
             optionElement.appendChild(inputElement);
             optionElement.appendChild(labelElement);
-            this.optionsElement.appendChild(optionElement);
-
+            if (this.optionsElement) {
+                this.optionsElement.appendChild(optionElement);
+            }
         });
-        if (chosenOption && chosenOption.chosenAnswerId) {
+        if (this.nextButtonElement) {
+            if (chosenOption && chosenOption.chosenAnswerId) {
+                this.nextButtonElement.removeAttribute('disabled');
+            } else {
+                this.nextButtonElement.setAttribute('disabled', 'disabled');
+            }
+        }
+
+        if (this.nextButtonElement) {
+            if (this.currentQuestionIndex === this.quiz.questions.length) {
+                this.nextButtonElement.innerText = 'Завершить';
+            } else {
+                this.nextButtonElement.innerText = 'Далее';
+            }
+        }
+
+        if (this.prevButtonElement) {
+            if (this.currentQuestionIndex > 1) {
+                this.prevButtonElement.removeAttribute('disabled');
+            } else {
+                this.prevButtonElement.setAttribute('disabled', 'disabled');
+            }
+        }
+    }
+
+    private chooseAnswer(): void {
+        if (this.nextButtonElement) {
             this.nextButtonElement.removeAttribute('disabled');
-        } else {
-            this.nextButtonElement.setAttribute('disabled', 'disabled');
-        }
-        if (this.currentQuestionIndex === this.quiz.questions.length) {
-            this.nextButtonElement.innerText = 'Завершить';
-        } else {
-            this.nextButtonElement.innerText = 'Далее';
-        }
-        if (this.currentQuestionIndex > 1) {
-            this.prevButtonElement.removeAttribute('disabled');
-        } else {
-            this.prevButtonElement.setAttribute('disabled', 'disabled');
         }
     }
 
-    chooseAnswer() {
-        this.nextButtonElement.removeAttribute('disabled');
-    }
+    private move(action: ActionTestType): void {
+        if (!this.quiz) return;
 
-    move(action) {
-        const activeQuestion = this.quiz.questions[this.currentQuestionIndex - 1];
-        const chosenAnswer = Array.from(document.getElementsByClassName('option-answer')).find(element => {
-            return element.checked;
-        })
-        let chosenAnswerId = null;
+        const activeQuestion: QuizQuestionType = this.quiz.questions[this.currentQuestionIndex - 1];
+        const chosenAnswer: HTMLInputElement | undefined = Array.from(document.getElementsByClassName('option-answer')).find(element => {
+            return (element as HTMLInputElement).checked;
+        }) as HTMLInputElement;
+        let chosenAnswerId: number | null = null;
         if (chosenAnswer && chosenAnswer.value) {
             chosenAnswerId = Number(chosenAnswer.value);
         }
 
-        const existingResult = this.userResult.find(item => {
+        const existingResult: UserResultType | undefined = this.userResult.find(item => {
             return item.questionId === activeQuestion.id
         });
-        if (existingResult) {
-            existingResult.chosenAnswerId = chosenAnswerId;
-        } else {
-            this.userResult.push({
-                questionId: activeQuestion.id,
-                chosenAnswerId: chosenAnswerId
-            });
+        if (chosenAnswerId) {
+            if (existingResult) {
+                existingResult.chosenAnswerId = chosenAnswerId;
+            } else {
+                this.userResult.push({
+                    questionId: activeQuestion.id,
+                    chosenAnswerId: chosenAnswerId
+                });
+            }
         }
 
 
-        if (action === 'next' || action === 'pass') {
+
+        if (action === ActionTestType.next || action === ActionTestType.pass) {
             this.currentQuestionIndex++;
         } else {
             this.currentQuestionIndex--;
@@ -233,36 +252,39 @@ export class Test {
             return;
         }
 
-        Array.from(this.progressBarElement.children).forEach((item, index) => {
-            const currentItemIndex = index + 1;
-            item.classList.remove('complete');
-            item.classList.remove('active');
-            if (currentItemIndex === this.currentQuestionIndex) {
-                item.classList.add('active');
-            } else if (currentItemIndex < this.currentQuestionIndex) {
-                item.classList.add('complete');
-            }
-        })
+        if (this.progressBarElement) {
+            Array.from(this.progressBarElement.children).forEach((item: Element, index: number) => {
+                const currentItemIndex: number = index + 1;
+                item.classList.remove('complete');
+                item.classList.remove('active');
+                if (currentItemIndex === this.currentQuestionIndex) {
+                    item.classList.add('active');
+                } else if (currentItemIndex < this.currentQuestionIndex) {
+                    item.classList.add('complete');
+                }
+            })
+        }
 
         this.showQuestion();
     }
 
-    async complete() {
-        const userInfo = Auth.getUserInfo(); //берем из localStorage информацию о пользователе
+    private async complete(): Promise<void> {
+        const userInfo: UserInfoType | null = Auth.getUserInfo(); //берем из localStorage информацию о пользователе
         if(!userInfo) {
-             location.href = '#/'
+             location.href = '#/';
+             return;
         }
 
         try {
-            const result = await CustomHttp.request(config.host + '/tests/' + this.routeParams.id + '/pass', 'POST',
+            const result: DefaultResponseType | PassTestResponseType = await CustomHttp.request(config.host + '/tests/' + this.routeParams.id + '/pass', 'POST',
                 {
                     userId: userInfo.userId,
                     results: this.userResult
                 })
 
             if(result) {
-                if (result.error) {
-                    throw new Error(result.error);
+                if ((result as DefaultResponseType).error !== undefined) {
+                    throw new Error((result as DefaultResponseType).message);
                 }
                 location.href = '#/result?id=' + this.routeParams.id;
             }
