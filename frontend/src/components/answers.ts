@@ -1,10 +1,16 @@
-import {UrlManager} from "../utils/url-manager.ts";
-import {Auth} from "../services/auth.ts";
-import {CustomHttp} from "../services/custom-http.ts";
+import {UrlManager} from "../utils/url-manager";
+import {Auth} from "../services/auth";
+import {CustomHttp} from "../services/custom-http";
 import config from "../../config/config";
+import {QuizType} from "../types/quiz.type";
+import {QueryParamsType} from "../types/query-params.type";
+import {UserInfoType} from "../types/user-info.type";
 
 export class Answers {
 
+    private quiz: QuizType | null;
+    private routeParams: QueryParamsType;
+    private userData: string | null;
     constructor() {
         this.quiz = null;
         this.routeParams = UrlManager.getQueryParams();
@@ -13,30 +19,36 @@ export class Answers {
 
     }
     async init() {
-        const userInfo = Auth.getUserInfo(); //берем из localStorage информацию о пользователе
+        const userInfo  = Auth.getUserInfo(); //берем из localStorage информацию о пользователе
         const userEmail = Auth.getUserEmail(); //берем из localStorage email
         if(!userInfo || !userEmail){
             location.href = '#/';
-        }
-        this.userData = userInfo.fullName + ', ' + userEmail;
+        } else {
+            if (userInfo.fullName) {
+                this.userData = userInfo.fullName  + ', ' + userEmail;
+            }
 
-        if(this.routeParams.id) {
-            try {
-                const result = await CustomHttp.request(config.host + '/tests/' + this.routeParams.id + '/result/details?userId=' + userInfo.userId);
-                // /api/tests/:id/result/details?userId=:userId
-                if(result) {
-                    if (result.error) {
-                        throw new Error(result.error);
+            if(this.routeParams.id) {
+                try {
+                    if (userInfo.userId) {
+                        const result = await CustomHttp.request(config.host + '/tests/' + this.routeParams.id + '/result/details?userId=' + userInfo.userId);
+                        // /api/tests/:id/result/details?userId=:userId
+                        if(result) {
+                            if (result.error) {
+                                throw new Error(result.error);
+                            }
+                            this.quiz = result;
+                            this.showQuestions();
+                        }
                     }
-                    this.quiz = result;
-                    this.showQuestions();
+                } catch (error) {
+                    console.log(error);
                 }
-            } catch (error) {
-                console.log(error);
             }
         }
     }
     showQuestions() {
+
         document.getElementById('pre-title').innerText = this.quiz.test.name;
         document.getElementById('user').querySelector('span').textContent = this.userData;
 

@@ -14,3 +14,7 @@ export type QuizAnswerType = {
     id: number,
     answer: string
 }
+
+export type QuizResultType = {
+
+}
