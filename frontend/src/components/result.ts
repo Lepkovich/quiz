@@ -15,8 +15,10 @@ export class Result {
         // document.getElementById('result-score').innerText = this.routeParams.score + '/' + this.routeParams.total;
         let id = this.routeParams.id;
         let next = document.getElementById('show-answers');
-        next.onclick = function () {
-            location.href = '#/answers?id=' + id;
+        if (next) {
+            next.onclick = function () {
+                location.href = '#/answers?id=' + id;
+            }
         }
         this.init();
 

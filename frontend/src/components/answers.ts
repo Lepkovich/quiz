@@ -11,8 +11,13 @@ export class Answers {
     private quiz: QuizType | QuizResultType | null;
     private routeParams: QueryParamsType;
     private userData: string | null;
+    readonly preTitle: HTMLElement | null;
+    readonly userField: HTMLElement | null;
+
     constructor() {
         this.quiz = null;
+        this.preTitle = document.getElementById('pre-title');
+        this.userField = document.getElementById('user')?.querySelector('span') as HTMLElement | null;
         this.routeParams = UrlManager.getQueryParams();
         this.userData = null;
         this.init();
@@ -25,7 +30,7 @@ export class Answers {
             location.href = '#/';
         } else {
             if (userInfo.fullName) {
-                this.userData as string = userInfo.fullName  + ', ' + userEmail;
+                this.userData = userInfo.fullName  + ', ' + userEmail;
             }
 
             if(this.routeParams.id) {
@@ -53,14 +58,14 @@ export class Answers {
 
         if ('test' in this.quiz) {
             const quizResult = this.quiz as QuizResultType;
-            if (quizResult.test.name) {
-                document.getElementById('pre-title').innerText = quizResult.test.name as string;
+            if (quizResult.test.name && this.preTitle) {
+                this.preTitle.innerText = quizResult.test.name as string;
             }
-            if (this.userData) {
-                document.getElementById('user').querySelector('span').textContent = this.userData as string;
+            if (this.userData && this.userField) {
+                this.userField.textContent = this.userData as string;
             }
 
-            const answersBlock: HTMLElement | null = document.getElementById('answers-block')
+            const answersBlock: HTMLElement | null = document.getElementById('answers-block');
 
 //создаем структуру html
             for (let i = 0; i < quizResult.test.questions.length; i++) {
@@ -72,7 +77,9 @@ export class Answers {
                 div.innerHTML = '<span>Вопрос ' + (i + 1) + ':</span> ' + quizResult.test.questions[i].question;
 
 // Добавляем созданный div-элемент в answersBlock
-                answersBlock.appendChild(div);
+                if (answersBlock) {
+                    answersBlock.appendChild(div);
+                }
 
                 quizResult.test.questions[i].answers.forEach(item => {
 // создаем div-элемент с class="test-answers-block-options" и id="options"
@@ -109,16 +116,19 @@ export class Answers {
 // добавляем вариант ответа в div-элемент
                     div.appendChild(option1);
 // добавляем div-элемент в answersBlock
-                    answersBlock.appendChild(div);
+                    if (answersBlock) {
+                        answersBlock.appendChild(div);
+                    }
                 });
-
             }
 
         }
 
-        const backToResult = document.getElementById('back-to-results');
-        backToResult.onclick = function () {
-            window.history.back();
+        const backToResult: HTMLElement | null = document.getElementById('back-to-results');
+        if (backToResult) {
+            backToResult.onclick = function () {
+                window.history.back();
+            }
         }
     }
 }

@@ -12,9 +12,14 @@ export type QuizQuestionType = {
 
 export type QuizAnswerType = {
     id: number,
-    answer: string
+    answer: string,
+    correct?: boolean
 }
 
 export type QuizResultType = {
-
+    test: {
+        id: number,
+        name: string,
+        questions: Array<QuizQuestionType>
+    }
 }
