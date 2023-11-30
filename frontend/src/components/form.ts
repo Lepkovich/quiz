@@ -115,7 +115,7 @@ export class Form {
         return isValid;
     }
 
-    private async processForm(): Promise<void> {
+    private async   processForm(): Promise<void> {
         if (this.validateForm()) {
             // выносим отдельно поиск значений email и password, потому что они нужны и при регистрации и при входе.
             const email = this.fields.find(item => item.name === 'email')?.element?.value;
